@@ -2,7 +2,7 @@
 
 ## Goals
 
-The goal is to be able to represent a quantum Hamiltonian of discrete degrees of freedom, and to be able to automatically conveert this representation into a form suitable for:
+The goal is to be able to represent a quantum Hamiltonian of discrete degrees of freedom, and to be able to automatically convert this representation into a form suitable for:
 
 - exact diagonalization
 - mean-field theory
