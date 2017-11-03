@@ -16,6 +16,7 @@ TODO testing
 TODO spin 1/2 hamiltonian
 """
 
+
 class Site:
 
     def __init__(self):
