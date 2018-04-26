@@ -32,7 +32,7 @@ class Operator:
     def _map_operation(self, other, op, label):
 
         if isinstance(other, (int, float, complex)):
-            return NotImplementedError
+            raise NotImplementedError
 
         if self.type != other.type:
             raise ValueError
@@ -73,6 +73,7 @@ class Operator:
     def __repr__(self):
         return self.__str__()
 
+
 class Identity(Operator):
 
     def __init__(self, type):
@@ -108,9 +109,8 @@ class AnnihilateBoson(Operator):
             return e
 
     def coherent_representation(self, x):
-        assert len(x) == self.type.coherent_parameters
-        re, im = x
+        assert len(x) == self.type.coherent_parameters        
+        x = complex(*x)
         if self._conjugated is True:
-            return re - 1j*im
-        else:
-            return re + 1j*im
+            return x.conjugate()
+        return x
