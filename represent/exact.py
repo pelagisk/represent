@@ -1,34 +1,25 @@
+from operator import mul
 from functools import reduce
-from represent import map_hamiltonian
+from .hamiltonian import map_hamiltonian
 import numpy as np
 
 
-def exact_hamiltonian(hamiltonian, trunc=2, sparse=False):
-    """Creates an exact matrix of a many-body Hamiltonian
-       from a Hamiltonian.
-       TODO: implement sparse!
-       TODO: dim should really be specified in the Hamiltonian
-    """
+def exact_hamiltonian(hamiltonian, lattice):
 
-    terms, lattice = hamiltonian
-    n_sites = len(lattice)
-    dim = trunc ** n_sites
+    dims = lattice.get_dims(hamiltonian)
 
-    def op(index, o):
-        matrix = o.exact_representation(trunc)
-        d = matrix.shape[0]
+    def term(operators, link):
         lst = []
-        for i in range(n_sites):
-            if i == index:
+        for i, d in enumerate(dims):
+            if i in link['indices']:
+                idx = link['indices'].index(i)
+                matrix = operators[idx].exact_representation()
+                assert(matrix.shape[0] == d)
                 lst.append(matrix)
             else:
-                # TODO: allow for more generality here
                 lst.append(np.identity(d))
         return reduce(np.kron, lst)
 
-    def term(operators, sites):
-        return reduce(np.dot, (op(i, o)
-                      for (o, (i, _)) in zip(operators, sites)))
-
-    H = np.zeros((dim, dim), dtype='complex')
-    return map_hamiltonian(hamiltonian, H, term)
+    M = reduce(mul, dims)
+    H = np.zeros((M, M), dtype='complex')
+    return map_hamiltonian(hamiltonian, lattice, H, term)

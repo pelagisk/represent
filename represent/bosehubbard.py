@@ -1,14 +1,16 @@
-from operators import Boson, Identity
+from .sitetypes import SiteType
+from .operators import AnnihilateBoson, Identity
+from .hamiltonian import Hamiltonian
 
 
-def bose_hubbard_hamiltonian(t=1, u=0, n_sites=2):
-    lattice = dict((i, {'type': 'boson'}) for i in range(n_sites))
-    singletons = [{k: v} for k, v in lattice.items()]
-    nearest_neighbors = [{k: lattice[k], (k+1): lattice[k+1]}
-                         for k in range(len(lattice)-1)]
-    b = Boson()
-    i = Identity(b.type)
-    n = b.conj() * b
-    hopping = [nearest_neighbors, t, [b.conj(), b]]
-    onsite_energy = [singletons, u, [n*(n-i)]]
-    return [hopping, onsite_energy], lattice
+def bose_hubbard_hamiltonian(t=1, u=0, mu=0, truncation=3):
+    boson = SiteType("boson", truncation, 2)
+    types = {'generic': boson}
+    b = AnnihilateBoson(boson)
+    n = b.H() * b
+    i = Identity(boson)
+    interaction = u, [n*(n-i)]
+    chem = (-mu), [n]
+    nn = t, [b.H(), b]
+    terms = {'onsite': [interaction, chem], 'nn': [nn]}
+    return Hamiltonian(types, terms)

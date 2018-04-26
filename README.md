@@ -13,6 +13,14 @@ Code is on the idea stage and will be heavily edited later.
 
 ## Ideas
 
+- Since a vector is required for mean-field: save the nodes in a list
+  (this already sets an order, which is needed anyway, and does not hurt).
+- Separate definition of lattice from Hamiltonians? This is more natural to the
+  way physicists think. Requires defining nodes and "edges" or a list of tuples.
+- Then each tuple corresponds to a term.
+
+
+
 - Dict of nodes represents the lattice.
 - Sublists of this list are:
   - Singletons: references one-site terms

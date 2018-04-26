@@ -1,24 +1,27 @@
 import numpy as np
-from represent import map_hamiltonian
+from .hamiltonian import map_hamiltonian
 
 
-def mean_field_hamiltonian(hamiltonian):
-    """Constructs a mean-field energy functional from a Hamiltonian.
-    """
+def mean_field_hamiltonian(hamiltonian, lattice):
 
-    terms, lattice = hamiltonian
-    n_sites = len(lattice)
+    coh = lattice.get_coherent_param_sizes(hamiltonian)
+
+    def chunk(x, i):
+        if i > 0:
+            start = sum(coh[:i])
+        else:
+            start = 0
+        end = start + coh[i]
+        return x[start:end]
 
     def mean_field_energy(x):
 
-        def term(operators, sites):
-            # TODO: now it only works with complex numbers...
-            return np.product([
-                o.coherent_representation(x[i] + 1j*x[n_sites+i])
-                for (o, (i, _)) in zip(operators, sites)])
+        def term(operators, link):
+            return np.product([op.coherent_representation(chunk(x, i))
+                              for (op, i) in zip(operators, link['indices'])])
 
         energy = np.array([0.0], dtype='complex')
-        energy = map_hamiltonian(hamiltonian, energy, term)
-        return np.real(energy)
+        energy = map_hamiltonian(hamiltonian, lattice, energy, term)
+        return np.real(energy)[0]
 
     return mean_field_energy

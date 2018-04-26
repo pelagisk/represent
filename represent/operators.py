@@ -1,19 +1,14 @@
-"""
-Represents operators as objects, for convenience.
-"""
-
-
 from operator import add
 from operator import mul
 from operator import sub
 from copy import copy
 import numpy as np
+from .sitetypes import SiteType
 
 
 class Operator:
 
     def __init__(self):
-        self.type = 'generic'
         self._str = 'O'
         self._conjugated = False
 
@@ -25,10 +20,13 @@ class Operator:
     def conj(self):
         return self.conjugate()
 
-    def exact_representation(trunc):
+    def H(self):
+        return self.conjugate()
+
+    def exact_representation(self):
         raise NotImplementedError
 
-    def coherent_representation(x):
+    def coherent_representation(self, x):
         raise NotImplementedError
 
     def _map_operation(self, other, op, label):
@@ -41,10 +39,10 @@ class Operator:
 
         o = Operator()
 
-        def exact_representation(trunc):
+        def exact_representation():
             f = self.exact_representation
             g = other.exact_representation
-            return op(f(trunc), g(trunc))
+            return op(f(), g())
 
         def coherent_representation(x):
             f = self.coherent_representation
@@ -75,19 +73,18 @@ class Operator:
     def __repr__(self):
         return self.__str__()
 
-
 class Identity(Operator):
 
     def __init__(self, type):
-        self.type = type
+        self.type = SiteType(type._str, type.dims, 1)
         self._str = "I"
         self._conjugated = False
 
     def conj(self):
         return self
 
-    def exact_representation(self, trunc):
-        return np.identity(trunc)
+    def exact_representation(self):
+        return np.identity(self.type.dims)
 
     def coherent_representation(self, x):
         return 1
@@ -96,23 +93,22 @@ class Identity(Operator):
         return self._str
 
 
-class Boson(Operator):
+class AnnihilateBoson(Operator):
 
-    def __init__(self):
+    def __init__(self, type):
         super().__init__()
-        self.type = "boson"
-        self.mf_input_size = 2
         self._str = "B"
+        self.type = type
 
-    def exact_representation(self, trunc):
-        e = np.diag(np.sqrt(np.arange(1, trunc)), 1)
+    def exact_representation(self):
+        e = np.diag(np.sqrt(np.arange(1, self.type.dims)), 1)
         if self._conjugated is True:
             return e.conjugate().transpose()
         else:
             return e
 
     def coherent_representation(self, x):
-        assert len(x) == 2
+        assert len(x) == self.type.coherent_parameters
         re, im = x
         if self._conjugated is True:
             return re - 1j*im
