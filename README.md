@@ -11,40 +11,16 @@ The goal is to be able to represent a quantum Hamiltonian of discrete degrees of
 
 Code is on the idea stage and will be heavily edited later.
 
-## Ideas
+## Description
 
-- Since a vector is required for mean-field: save the nodes in a list
-  (this already sets an order, which is needed anyway, and does not hurt).
-- Separate definition of lattice from Hamiltonians? This is more natural to the
-  way physicists think. Requires defining nodes and "edges" or a list of tuples.
-- Then each tuple corresponds to a term.
+- `SiteType`: holds information about local Hilbert space dimension and the dimension required for a coherent-state representation.
+- `Lattice`: consists of a set of sites, each of a certain "kind". There are also "links" between the sites which can have a number of "tags". "Kinds" and "tags" are useful for addressing.
+- `Operator`: an abstract local operator. Can be represented in many concrete ways.
+- `Hamiltonian`: essentially a labelling of a `Lattice`: each "kind" is designated a `SiteType` and each "tag" of links correspond to a product of local operators.
 
+The idea is then that a lattice and a Hamiltonian can be defined independently, and transformed to concrete matrices when needed.
 
-
-- Dict of nodes represents the lattice.
-- Sublists of this list are:
-  - Singletons: references one-site terms
-  - Pairs: two-body terms
-  - etc..
-  - does it have to be ordered? How does this affect Hamiltonians?
-  - each site can only have one type of operators defined!
-- One can classify the sublists into different types, each with a label.
-
-- Hamiltonians are a function from a possible list of variable arguments,
-  to a list of terms, where each term is:
-  - a reference to a type of sublist
-  - a c-number variable: here the variable arguments come in
-  - a list of references to operators,
-    matching the shape of the type of sublist
-
-- Operators are:
-  - a label
-  - additional info and description
-  - different representations: mean-field, DMRG, exact diagonalization.
-  - would be nice if it was possible to multiply and add them?
-  - best to work with objects for this?
-
-- How should the relation between node "type" (local Hilbert space) and operators be interpreted?
+See tests!
 
 ## Setup
 
@@ -53,6 +29,10 @@ Written for Python 3. Requires installing the following Python packages:
 - `numpy`
 - `scipy`
 - `matplotlib`
+
+Run test(s) from the root directory:
+
+`python3 -m unittest discover`
 
 ## License
 
