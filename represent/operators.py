@@ -109,8 +109,22 @@ class AnnihilateBoson(Operator):
             return e
 
     def coherent_representation(self, x):
-        assert len(x) == self.type.coherent_parameters        
+        assert len(x) == self.type.coherent_parameters
         x = complex(*x)
         if self._conjugated is True:
             return x.conjugate()
         return x
+
+class MatrixOperator(Operator):
+
+    def __init__(self, type, label, matrix):
+        super().__init__()
+        self._str = label
+        self.type = type
+        self.matrix = matrix
+
+    def exact_representation(self):
+        if self._conjugated is True:
+            return self.matrix.conjugate().transpose()
+        else:
+            return self.matrix
