@@ -33,8 +33,9 @@ def unit_cell_chain(cell, N_cells, periodic=False):
             idx = n_cell*i+j
             kinds.append(kind)
             nn_tag = "nn_" + kind
+            onsite_tag = "onsite_" + kind
             links.append({'indices': [idx],
-                          'tags': set(["onsite"])})
+                          'tags': set([onsite_tag])})
             links.append({'indices': [idx, idx+1],
                           'tags': set([nn_tag, nn_tag + "_left"])})
             links.append({'indices': [idx+1, idx],
